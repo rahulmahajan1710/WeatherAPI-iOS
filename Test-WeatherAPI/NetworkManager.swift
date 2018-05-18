@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import  UIKit
 
 enum NetworkError : Error{
     case invalidURL(String)
@@ -29,8 +30,10 @@ class NetworkManager: NSObject {
             completionHandler(nil, NetworkError.invalidURL(safeURLString))
             return
         }
-        
+        enableNetworkIndicator(true)
         let dataTask = urlSession.dataTask(with: endpointURL, completionHandler: { (data, response, error) -> Void in
+            self.enableNetworkIndicator(false)
+          
             guard error == nil else {
                 completionHandler(nil, NetworkError.forwarded(error!))
                 return
@@ -72,7 +75,7 @@ class NetworkManager: NSObject {
                     let dateText = info["dt_txt"] as? String,
                     let date = dateformatter.date(from: dateText){
                     
-                    let data = WeatherData(minTemperature: tempMin.floatValue, maxTemperature: tempMax.floatValue, condition: desc, date: date, unit: .scientific)
+                    let data = WeatherData(minTemperature: convertToDegreeCelsius(temp: tempMin.floatValue), maxTemperature: convertToDegreeCelsius(temp: tempMax.floatValue), condition: desc, date: date, unit: .metric)
                     weatherForecast.append(data)
                 }
             }
@@ -80,4 +83,15 @@ class NetworkManager: NSObject {
         return weatherForecast
     }
     
+    func enableNetworkIndicator(_ enable :Bool) {
+        DispatchQueue.main.async {
+              UIApplication.shared.isNetworkActivityIndicatorVisible = enable
+        }
+    }
+}
+
+extension NetworkManager{
+    func convertToDegreeCelsius(temp : Float) -> Float{
+        return temp - 273.15
+    }
 }

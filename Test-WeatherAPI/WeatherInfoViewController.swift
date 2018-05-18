@@ -37,11 +37,15 @@ extension WeatherInfoViewController : UITableViewDataSource{
         let weatherCell = tableView.dequeueReusableCell(withIdentifier: "WeatherDataCell", for: indexPath) as! WeatherDataCell
         let weatherInfo = weatherData[indexPath.row]
         weatherCell.conditionLabel.text = weatherInfo.condition
-        weatherCell.minLabel.text = "Min. Temp: \(weatherInfo.minTemperature) \(weatherInfo.unit.rawValue)"
-         weatherCell.maxLabel.text = "Max. Temp: \(weatherInfo.maxTemperature) \(weatherInfo.unit.rawValue)"
+        weatherCell.minLabel.text = "Min. Temp: \(weatherInfo.minTemperature.format()) \(weatherInfo.unit.rawValue)"
+         weatherCell.maxLabel.text = "Max. Temp: \(weatherInfo.maxTemperature.format()) \(weatherInfo.unit.rawValue)"
         weatherCell.dateLabel.text = dateFormatter.string(from: weatherInfo.date)
         return weatherCell
     }
-    
-    
+}
+
+extension Float {
+    func format() -> String {
+        return String(format: "%.2f", self)
+    }
 }
